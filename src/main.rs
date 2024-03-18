@@ -36,25 +36,16 @@ fn main() {
                                 eprintln!("Error creating symlink: {}", e);
                                 continue;
                             }
-
-                            // // Restart the vscode-server systemd unit
-                            // if let Err(e) = Command::new("systemctl")
-                            //     .args(["restart", "vscode-server.service"])
-                            //     .output()
-                            // {
-                            //     eprintln!("Failed to restart vscode-server: {}", e);
-                            // }
-                            // // Restart the vscode-server systemd unit
-                            // if let Err(e) = Command::new("systemctl")
-                            //     .args(["restart", "fix-vscode-server.service"])
-                            //     .output()
-                            // {
-                            //     eprintln!("Failed to restart vscode-server: {}", e);
-                            // }
-
-                            // Additional systemd unit restarts can be handled similarly
                         }
                         None => eprintln!("Node path not found in the provided line."),
+                    }
+                } else if line.contains("Could not find pty on pty host") {
+                    // restart systemd unit
+                    if let Err(e) = Command::new("systemctl")
+                        .args(["restart", "vscode-server.service"])
+                        .output()
+                    {
+                        eprintln!("Failed to restart vscode-server: {}", e);
                     }
                 } else {
                     println!("{}", line);
