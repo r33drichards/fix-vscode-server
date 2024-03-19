@@ -39,13 +39,16 @@ fn main() {
                         }
                         None => eprintln!("Node path not found in the provided line."),
                     }
-                } else if line.contains("Could not find pty on pty host") {
+                } else if line.contains("Could not find pty on pty host")
+                    || (line.contains("stderr")
+                        && (line.contains("ENOTTY") || line.contains("node-pty") || line.contains("node/ptyHostMain") ))
+                {
                     // restart systemd unit
                     if let Err(e) = Command::new("systemctl")
                         .args(["restart", "vscode-server.service"])
                         .output()
                     {
-                        eprintln!("Failed to restart vscode-server: {}", e);
+                        println!("Failed to restart vscode-server: {}", e);
                     }
                 } else {
                     println!("{}", line);
